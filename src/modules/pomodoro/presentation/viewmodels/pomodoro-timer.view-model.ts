@@ -230,10 +230,11 @@ export const usePomodoroTimerViewModel = () => {
     });
   }, [getDuration]);
 
-  const addTask = useCallback((title: string) => {
+  const addTask = useCallback((title: string, assignee: string) => {
     const newTask: Task = {
       id: crypto.randomUUID(),
       title,
+      assignee,
       isCompleted: false,
       createdAt: new Date(),
     };

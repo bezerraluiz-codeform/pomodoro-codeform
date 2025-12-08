@@ -37,8 +37,8 @@ export const PomodoroHomeView = () => {
         }`}
       />
       <main className="relative z-10 flex w-full max-w-6xl flex-col items-center justify-center px-4 py-8 md:px-6 md:py-12">
-        <div className="flex w-full flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
-          <aside className="w-full lg:w-96 lg:border-r lg:border-slate-800 lg:pr-12">
+        <div className="flex w-full flex-col gap-12 lg:flex-row lg:items-stretch lg:justify-between">
+          <aside className="w-full lg:w-[550px] lg:border-r lg:border-slate-800 lg:pr-12">
             <PomodoroTodoList
               tasks={tasks}
               onAdd={addTask}
@@ -50,7 +50,11 @@ export const PomodoroHomeView = () => {
           <div className="flex flex-1 flex-col items-center gap-10 md:gap-12">
             <header className="flex flex-col items-center gap-4">
               <Image
-                src="/codeform-logo.svg"
+                src={
+                  process.env.NODE_ENV === "production"
+                    ? "/pomodoro-codeform/codeform-logo.svg"
+                    : "/codeform-logo.svg"
+                }
                 alt="Logo da CodeForm"
                 width={96}
                 height={96}

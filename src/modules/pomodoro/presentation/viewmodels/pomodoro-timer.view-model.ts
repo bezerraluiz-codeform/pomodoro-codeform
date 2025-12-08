@@ -1,0 +1,318 @@
+import { useCallback, useEffect, useState } from "react";
+import { Task } from "../../domain/entities/task.entity";
+
+export type PomodoroMode = "focus" | "short-break" | "long-break";
+
+export type PomodoroTimerStatus = "idle" | "running" | "paused";
+
+export type PomodoroDurationMode = "standard" | "short";
+
+interface PomodoroTimerState {
+  mode: PomodoroMode;
+  status: PomodoroTimerStatus;
+  remainingSeconds: number;
+  completedFocusBlocks: number;
+  tasks: Task[];
+  isPlayingFocusVideo: boolean;
+  currentFocusVideo: string | null;
+  durationMode: PomodoroDurationMode;
+}
+
+const DURATIONS = {
+  standard: {
+    focus: 30 * 60,
+    shortBreak: 10 * 60,
+    longBreak: 20 * 60,
+  },
+  short: {
+    focus: 20 * 60,
+    shortBreak: 5 * 60,
+    longBreak: 10 * 60,
+  },
+};
+
+const FOCUS_VIDEOS = ["/focus.mp4", "/focus2.mp4"];
+
+const createInitialState = (): PomodoroTimerState => ({
+  mode: "focus",
+  status: "idle",
+  remainingSeconds: DURATIONS.standard.focus,
+  completedFocusBlocks: 0,
+  tasks: [],
+  isPlayingFocusVideo: false,
+  currentFocusVideo: null,
+  durationMode: "standard",
+});
+
+export const usePomodoroTimerViewModel = () => {
+  const [state, setState] = useState<PomodoroTimerState>(createInitialState);
+  const [isAutoStartEnabled, setIsAutoStartEnabled] = useState(false);
+
+  const getDuration = useCallback(
+    (mode: PomodoroMode, durationMode: PomodoroDurationMode) => {
+      const config = DURATIONS[durationMode];
+      if (mode === "focus") return config.focus;
+      if (mode === "short-break") return config.shortBreak;
+      return config.longBreak;
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (state.status !== "running") {
+      return undefined;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setState((previousState) => {
+        if (previousState.status !== "running") {
+          return previousState;
+        }
+
+        if (previousState.remainingSeconds === 0) {
+          let nextMode: PomodoroMode = "focus";
+          let nextCompletedFocusBlocks = previousState.completedFocusBlocks;
+
+          if (previousState.mode === "focus") {
+            nextCompletedFocusBlocks += 1;
+            if (nextCompletedFocusBlocks % 4 === 0) {
+              nextMode = "long-break";
+            } else {
+              nextMode = "short-break";
+            }
+          } else if (previousState.mode === "long-break") {
+            nextMode = "focus";
+            nextCompletedFocusBlocks = 0;
+          } else {
+            // short-break
+            nextMode = "focus";
+          }
+
+          const nextDuration = getDuration(nextMode, previousState.durationMode);
+
+          const shouldPlayVideo = previousState.mode === "focus";
+          const nextFocusVideo = shouldPlayVideo
+            ? FOCUS_VIDEOS[Math.floor(Math.random() * FOCUS_VIDEOS.length)]
+            : null;
+
+          return {
+            ...previousState,
+            mode: nextMode,
+            status: isAutoStartEnabled ? "running" : "idle",
+            remainingSeconds: nextDuration,
+            completedFocusBlocks: nextCompletedFocusBlocks,
+            isPlayingFocusVideo: shouldPlayVideo,
+            currentFocusVideo: nextFocusVideo,
+          };
+        }
+
+        return {
+          ...previousState,
+          remainingSeconds: previousState.remainingSeconds - 1,
+        };
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [state.status, isAutoStartEnabled]);
+
+  const toggleAutoStart = useCallback(() => {
+    setIsAutoStartEnabled((prev) => !prev);
+  }, []);
+
+  const toggleDurationMode = useCallback(() => {
+    setState((prev) => {
+      const nextDurationMode =
+        prev.durationMode === "standard" ? "short" : "standard";
+      const nextDuration = getDuration(prev.mode, nextDurationMode);
+
+      return {
+        ...prev,
+        durationMode: nextDurationMode,
+        // Se estiver idle, atualiza o tempo imediatamente para refletir a nova configuração
+        remainingSeconds: prev.status === "idle" ? nextDuration : prev.remainingSeconds,
+      };
+    });
+  }, [getDuration]);
+
+  const handleStart = useCallback(() => {
+    setState((previousState) => {
+      if (previousState.status === "running") {
+        return previousState;
+      }
+
+      let nextRemainingSeconds = previousState.remainingSeconds;
+
+      if (previousState.remainingSeconds === 0) {
+        nextRemainingSeconds = getDuration(
+          previousState.mode,
+          previousState.durationMode,
+        );
+      }
+
+      return {
+        ...previousState,
+        status: "running",
+        remainingSeconds: nextRemainingSeconds,
+      };
+    });
+  }, []);
+
+  const handlePause = useCallback(() => {
+    setState((previousState) => {
+      if (previousState.status !== "running") {
+        return previousState;
+      }
+
+      return {
+        ...previousState,
+        status: "paused",
+      };
+    });
+  }, []);
+
+  const handleResume = useCallback(() => {
+    setState((previousState) => {
+      if (previousState.status !== "paused") {
+        return previousState;
+      }
+
+      return {
+        ...previousState,
+        status: "running",
+      };
+    });
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setState((previousState) => {
+      const duration = getDuration(
+        previousState.mode,
+        previousState.durationMode,
+      );
+
+      return {
+        ...previousState,
+        status: "idle",
+        remainingSeconds: duration,
+      };
+    });
+  }, [getDuration]);
+
+  const handleSkip = useCallback(() => {
+    setState((previousState) => {
+      let nextMode: PomodoroMode = "focus";
+      let nextCompletedFocusBlocks = previousState.completedFocusBlocks;
+
+      if (previousState.mode === "focus") {
+        nextCompletedFocusBlocks += 1;
+        if (nextCompletedFocusBlocks % 4 === 0) {
+          nextMode = "long-break";
+        } else {
+          nextMode = "short-break";
+        }
+      } else {
+        nextMode = "focus";
+        if (previousState.mode === "long-break") {
+          nextCompletedFocusBlocks = 0;
+        }
+      }
+
+      const nextDuration = getDuration(nextMode, previousState.durationMode);
+
+      return {
+        ...previousState,
+        mode: nextMode,
+        status: "idle",
+        remainingSeconds: nextDuration,
+        completedFocusBlocks: nextCompletedFocusBlocks,
+      };
+    });
+  }, [getDuration]);
+
+  const addTask = useCallback((title: string) => {
+    const newTask: Task = {
+      id: crypto.randomUUID(),
+      title,
+      isCompleted: false,
+      createdAt: new Date(),
+    };
+
+    setState((prev) => ({
+      ...prev,
+      tasks: [...prev.tasks, newTask],
+    }));
+  }, []);
+
+  const toggleTaskCompletion = useCallback((taskId: string) => {
+    setState((prev) => ({
+      ...prev,
+      tasks: prev.tasks.map((task) =>
+        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+      ),
+    }));
+  }, []);
+
+  const removeTask = useCallback((taskId: string) => {
+    setState((prev) => ({
+      ...prev,
+      tasks: prev.tasks.filter((task) => task.id !== taskId),
+    }));
+  }, []);
+
+  const handleVideoEnded = useCallback(() => {
+    setState((prev) => ({
+      ...prev,
+      isPlayingFocusVideo: false,
+      currentFocusVideo: null,
+    }));
+  }, []);
+
+  const handlePrimaryActionClick = useCallback(() => {
+    if (state.status === "running") {
+      handlePause();
+      return;
+    }
+
+    if (state.status === "paused") {
+      handleResume();
+      return;
+    }
+
+    handleStart();
+  }, [state.status, handlePause, handleResume, handleStart]);
+
+  const minutes = Math.floor(state.remainingSeconds / 60);
+  const seconds = state.remainingSeconds % 60;
+
+  const formattedTime = `${String(minutes).padStart(2, "0")}:${String(
+    seconds,
+  ).padStart(2, "0")}`;
+
+  const primaryActionLabel: "Start" | "Pause" | "Resume" =
+    state.status === "running"
+      ? "Pause"
+      : state.status === "paused"
+        ? "Resume"
+        : "Start";
+
+  return {
+    formattedTime,
+    mode: state.mode,
+    primaryActionLabel,
+    isAutoStartEnabled,
+    handlePrimaryActionClick,
+    handleReset,
+    handleSkip,
+    toggleAutoStart,
+    tasks: state.tasks,
+    addTask,
+    toggleTaskCompletion,
+    removeTask,
+    isPlayingFocusVideo: state.isPlayingFocusVideo,
+    currentFocusVideo: state.currentFocusVideo,
+    durationMode: state.durationMode,
+    handleVideoEnded,
+    toggleDurationMode,
+  };
+};

@@ -51,6 +51,31 @@ export const usePomodoroTimerViewModel = () => {
   const [state, setState] = useState<PomodoroTimerState>(createInitialState);
   const [isAutoStartEnabled, setIsAutoStartEnabled] = useState(false);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTasks = localStorage.getItem("pomodoro-tasks");
+      if (savedTasks) {
+        try {
+          const parsedTasks = JSON.parse(savedTasks);
+          const tasksWithDates = parsedTasks.map((task: any) => ({
+            ...task,
+            createdAt: new Date(task.createdAt),
+          }));
+
+          setState((prev) => ({ ...prev, tasks: tasksWithDates }));
+        } catch (error) {
+          console.error("Erro ao carregar tasks do localStorage", error);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("pomodoro-tasks", JSON.stringify(state.tasks));
+    }
+  }, [state.tasks]);
+
   const getDuration = useCallback(
     (mode: PomodoroMode, durationMode: PomodoroDurationMode) => {
       const config = DURATIONS[durationMode];

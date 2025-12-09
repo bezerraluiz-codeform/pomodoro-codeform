@@ -34,7 +34,7 @@ const DURATIONS = {
 const BASE_PATH =
   process.env.NODE_ENV === "production" ? "/pomodoro-codeform" : "";
 
-const FOCUS_VIDEOS = [`${BASE_PATH}/focus.mp4`, `${BASE_PATH}/focus2.mp4`, `${BASE_PATH}/focus3.mp4`, `${BASE_PATH}/focus4.mp4`, `${BASE_PATH}/focus5.mp4`];
+const FOCUS_VIDEOS = [`${BASE_PATH}/focus.mp4`, `${BASE_PATH}/focus2.mp4`, `${BASE_PATH}/focus3.mp4`, `${BASE_PATH}/focus4.mp4`, `${BASE_PATH}/focus5.mp4`, `${BASE_PATH}/focus6.mp4`];
 
 const createInitialState = (): PomodoroTimerState => ({
   mode: "focus",

@@ -16,6 +16,7 @@ interface PomodoroTimerState {
   isPlayingFocusVideo: boolean;
   currentFocusVideo: string | null;
   durationMode: PomodoroDurationMode;
+  lastFocusVideo: string | null;
 }
 
 const DURATIONS = {
@@ -36,6 +37,21 @@ const BASE_PATH =
 
 const FOCUS_VIDEOS = [`${BASE_PATH}/focus.mp4`, `${BASE_PATH}/focus2.mp4`, `${BASE_PATH}/focus3.mp4`, `${BASE_PATH}/focus4.mp4`, `${BASE_PATH}/focus5.mp4`, `${BASE_PATH}/focus6.mp4`];
 
+const pickFocusVideo = (previousVideo: string | null) => {
+  if (FOCUS_VIDEOS.length === 1) {
+    return FOCUS_VIDEOS[0];
+  }
+
+  let candidate = FOCUS_VIDEOS[Math.floor(Math.random() * FOCUS_VIDEOS.length)];
+
+  if (previousVideo && candidate === previousVideo) {
+    const alternatives = FOCUS_VIDEOS.filter((video) => video !== previousVideo);
+    candidate = alternatives[Math.floor(Math.random() * alternatives.length)];
+  }
+
+  return candidate;
+};
+
 const createInitialState = (): PomodoroTimerState => ({
   mode: "focus",
   status: "idle",
@@ -45,6 +61,7 @@ const createInitialState = (): PomodoroTimerState => ({
   isPlayingFocusVideo: false,
   currentFocusVideo: null,
   durationMode: "standard",
+  lastFocusVideo: null,
 });
 
 export const usePomodoroTimerViewModel = () => {
@@ -120,7 +137,7 @@ export const usePomodoroTimerViewModel = () => {
 
           const shouldPlayVideo = previousState.mode === "focus";
           const nextFocusVideo = shouldPlayVideo
-            ? FOCUS_VIDEOS[Math.floor(Math.random() * FOCUS_VIDEOS.length)]
+            ? pickFocusVideo(previousState.lastFocusVideo)
             : null;
 
           return {
@@ -131,6 +148,9 @@ export const usePomodoroTimerViewModel = () => {
             completedFocusBlocks: nextCompletedFocusBlocks,
             isPlayingFocusVideo: shouldPlayVideo,
             currentFocusVideo: nextFocusVideo,
+            lastFocusVideo: shouldPlayVideo
+              ? nextFocusVideo
+              : previousState.lastFocusVideo,
           };
         }
 

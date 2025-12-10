@@ -5,7 +5,7 @@ export type PomodoroMode = "focus" | "short-break" | "long-break";
 
 export type PomodoroTimerStatus = "idle" | "running" | "paused";
 
-export type PomodoroDurationMode = "standard" | "short";
+export type PomodoroDurationMode = "long-break-15" | "long-break-30";
 
 interface PomodoroTimerState {
   mode: PomodoroMode;
@@ -20,15 +20,15 @@ interface PomodoroTimerState {
 }
 
 const DURATIONS = {
-  standard: {
-    focus: 30 * 60,
-    shortBreak: 10 * 60,
-    longBreak: 20 * 60,
-  },
-  short: {
-    focus: 20 * 60,
+  "long-break-15": {
+    focus: 25 * 60,
     shortBreak: 5 * 60,
-    longBreak: 10 * 60,
+    longBreak: 15 * 60,
+  },
+  "long-break-30": {
+    focus: 25 * 60,
+    shortBreak: 5 * 60,
+    longBreak: 30 * 60,
   },
 };
 
@@ -55,12 +55,12 @@ const pickFocusVideo = (previousVideo: string | null) => {
 const createInitialState = (): PomodoroTimerState => ({
   mode: "focus",
   status: "idle",
-  remainingSeconds: DURATIONS.standard.focus,
+  remainingSeconds: DURATIONS["long-break-15"].focus,
   completedFocusBlocks: 0,
   tasks: [],
   isPlayingFocusVideo: false,
   currentFocusVideo: null,
-  durationMode: "standard",
+  durationMode: "long-break-15",
   lastFocusVideo: null,
 });
 
@@ -171,7 +171,7 @@ export const usePomodoroTimerViewModel = () => {
   const toggleDurationMode = useCallback(() => {
     setState((prev) => {
       const nextDurationMode =
-        prev.durationMode === "standard" ? "short" : "standard";
+        prev.durationMode === "long-break-15" ? "long-break-30" : "long-break-15";
       const nextDuration = getDuration(prev.mode, nextDurationMode);
 
       return {

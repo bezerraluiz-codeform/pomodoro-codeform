@@ -167,25 +167,27 @@ export const PomodoroHomeView = () => {
                 <button
                   type="button"
                   role="switch"
-                  aria-checked={durationMode === "standard"}
+                  aria-checked={durationMode === "long-break-30"}
                   onClick={toggleDurationMode}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-100 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050815] ${
-                    durationMode === "standard"
+                    durationMode === "long-break-30"
                       ? "bg-[#a9e6f7]"
                       : "bg-slate-700"
                   }`}
                 >
-                  <span className="sr-only">Alternar duração do Pomodoro</span>
+                  <span className="sr-only">Alternar duração do intervalo longo</span>
                   <span
                     className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                      durationMode === "standard"
+                      durationMode === "long-break-30"
                         ? "translate-x-6"
                         : "translate-x-1"
                     }`}
                   />
                 </button>
                 <span className="text-sm font-medium text-slate-300">
-                  {durationMode === "standard" ? "30 min" : "20 min"}
+                  {durationMode === "long-break-15"
+                    ? "Intervalo longo 15 min"
+                    : "Intervalo longo 30 min"}
                 </span>
               </div>
             </section>

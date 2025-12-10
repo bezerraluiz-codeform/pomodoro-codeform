@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+// Esta rota é gerada de forma estática no build (output: "export")
+export const dynamic = "force-static";
+
 // Rota para listar vídeos de foco disponíveis em /public/videos
 export async function GET() {
   try {

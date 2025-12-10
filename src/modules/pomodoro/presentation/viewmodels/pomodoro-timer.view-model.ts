@@ -17,7 +17,6 @@ interface PomodoroTimerState {
   currentFocusVideo: string | null;
   durationMode: PomodoroDurationMode;
   lastFocusVideo: string | null;
-  focusVideos: string[];
 }
 
 const DURATIONS = {
@@ -36,29 +35,62 @@ const DURATIONS = {
 const BASE_PATH =
   process.env.NODE_ENV === "production" ? "/pomodoro-codeform" : "";
 
-const DEFAULT_FOCUS_VIDEOS = [`${BASE_PATH}/videos/focus.mp4`];
+const FOCUS_VIDEOS = [
+  `${BASE_PATH}/focus.mp4`,
+  `${BASE_PATH}/focus2.mp4`,
+  `${BASE_PATH}/focus3.mp4`,
+  `${BASE_PATH}/focus4.mp4`,
+  `${BASE_PATH}/focus5.mp4`,
+  `${BASE_PATH}/focus6.mp4`,
+  `${BASE_PATH}/focus7.mp4`,
+  `${BASE_PATH}/focus8.mp4`,
+];
 
-const buildFocusVideoUrl = (fileName: string) => `${BASE_PATH}/videos/${fileName}`;
+const getFocusVideoOrder = (video: string): number => {
+  const fileName = video.split("/").pop() ?? "";
+  const match = fileName.match(/^focus(\d*)\.mp4$/);
 
-const pickFocusVideo = (videos: string[], previousVideo: string | null) => {
-  if (videos.length === 0) {
-    return null;
+  if (!match) {
+    return 0;
   }
 
-  // Primeiro ciclo sempre começa no vídeo mais recente (primeiro do array)
+  const suffix = match[1];
+
+  if (!suffix) {
+    return 1;
+  }
+
+  const parsed = Number(suffix);
+
+  if (Number.isNaN(parsed)) {
+    return 0;
+  }
+
+  return parsed;
+};
+
+const SORTED_FOCUS_VIDEOS = [...FOCUS_VIDEOS].sort(
+  (first, second) => getFocusVideoOrder(second) - getFocusVideoOrder(first),
+);
+
+const pickFocusVideo = (previousVideo: string | null) => {
+  if (SORTED_FOCUS_VIDEOS.length === 1) {
+    return SORTED_FOCUS_VIDEOS[0];
+  }
+
   if (!previousVideo) {
-    return videos[0];
+    return SORTED_FOCUS_VIDEOS[0];
   }
 
-  const currentIndex = videos.indexOf(previousVideo);
+  const previousIndex = SORTED_FOCUS_VIDEOS.indexOf(previousVideo);
 
-  if (currentIndex === -1) {
-    return videos[0];
+  if (previousIndex === -1) {
+    return SORTED_FOCUS_VIDEOS[0];
   }
 
-  const nextIndex = (currentIndex + 1) % videos.length;
+  const nextIndex = (previousIndex + 1) % SORTED_FOCUS_VIDEOS.length;
 
-  return videos[nextIndex];
+  return SORTED_FOCUS_VIDEOS[nextIndex];
 };
 
 const createInitialState = (): PomodoroTimerState => ({
@@ -71,7 +103,6 @@ const createInitialState = (): PomodoroTimerState => ({
   currentFocusVideo: null,
   durationMode: "long-break-15",
   lastFocusVideo: null,
-  focusVideos: DEFAULT_FOCUS_VIDEOS,
 });
 
 export const usePomodoroTimerViewModel = () => {
@@ -95,44 +126,6 @@ export const usePomodoroTimerViewModel = () => {
         }
       }
     }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-
-    const loadFocusVideos = async () => {
-      try {
-        const response = await fetch("/api/focus-videos");
-
-        if (!response.ok) {
-          throw new Error("Falha ao buscar vídeos de foco");
-        }
-
-        const data: { files?: string[] } = await response.json();
-
-        const videos =
-          data.files && data.files.length > 0
-            ? data.files.map((fileName) => buildFocusVideoUrl(fileName))
-            : DEFAULT_FOCUS_VIDEOS;
-
-        setState((previousState) => ({
-          ...previousState,
-          focusVideos: videos,
-        }));
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error("Erro ao carregar vídeos de foco", error);
-
-        setState((previousState) => ({
-          ...previousState,
-          focusVideos: DEFAULT_FOCUS_VIDEOS,
-        }));
-      }
-    };
-
-    void loadFocusVideos();
   }, []);
 
   useEffect(() => {
@@ -185,7 +178,7 @@ export const usePomodoroTimerViewModel = () => {
 
           const shouldPlayVideo = previousState.mode === "focus";
           const nextFocusVideo = shouldPlayVideo
-            ? pickFocusVideo(previousState.focusVideos, previousState.lastFocusVideo)
+            ? pickFocusVideo(previousState.lastFocusVideo)
             : null;
 
           return {

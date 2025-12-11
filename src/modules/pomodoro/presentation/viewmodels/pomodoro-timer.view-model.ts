@@ -21,7 +21,8 @@ interface PomodoroTimerState {
 
 const DURATIONS = {
   "long-break-15": {
-    focus: 25 * 60,
+    // focus: 25 * 60,
+    focus: 5,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   },
@@ -36,14 +37,14 @@ const BASE_PATH =
   process.env.NODE_ENV === "production" ? "/pomodoro-codeform" : "";
 
 const FOCUS_VIDEOS = [
-  `${BASE_PATH}/focus.mp4`,
-  `${BASE_PATH}/focus2.mp4`,
-  `${BASE_PATH}/focus3.mp4`,
-  `${BASE_PATH}/focus4.mp4`,
-  `${BASE_PATH}/focus5.mp4`,
-  `${BASE_PATH}/focus6.mp4`,
-  `${BASE_PATH}/focus7.mp4`,
-  `${BASE_PATH}/focus8.mp4`,
+  `${BASE_PATH}/videos/focus.mp4`,
+  `${BASE_PATH}/videos/focus2.mp4`,
+  `${BASE_PATH}/videos/focus3.mp4`,
+  `${BASE_PATH}/videos/focus4.mp4`,
+  `${BASE_PATH}/videos/focus5.mp4`,
+  `${BASE_PATH}/videos/focus6.mp4`,
+  `${BASE_PATH}/videos/focus7.mp4`,
+  `${BASE_PATH}/videos/focus8.mp4`,
 ];
 
 const getFocusVideoOrder = (video: string): number => {

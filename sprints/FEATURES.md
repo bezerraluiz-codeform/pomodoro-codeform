@@ -25,6 +25,6 @@
 
 ## Usuários pré-cadastrados
 
-Usuário deve estar dentro de um workspace com quantidade de usuários no máximo igual a 4
+Usuário deve estar dentro de um workspace pré-definido (sem limite fixo de quantidade de usuários por workspace)
 
 - luiz.a@cartoriocriciuma.com.br

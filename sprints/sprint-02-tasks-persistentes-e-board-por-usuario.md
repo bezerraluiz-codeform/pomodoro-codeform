@@ -21,14 +21,12 @@ Permitir que as tasks sejam salvas em banco de dados (Supabase), compartilhadas 
 
 ## Backlog da sprint
 
-- [ ] Criar tabela `tasks` no Supabase com os campos mínimos:
-  - [ ] `id`, `workspace_id`, `owner_id` (responsável), `title`, `description`, `status`, `sla_datetime`, `created_at`, `updated_at`
-- [ ] Criar relacionamento entre `tasks`, `workspaces` e `users`
+- [ ] Validar se a modelagem da tabela `tasks` e relacionamentos criada na Sprint 00 atende aos casos de uso desta sprint, ajustando via migration incremental se necessário
 - [ ] Implementar endpoints/camadas de acesso a dados para CRUD básico de tasks (create, read, update, delete) respeitando o workspace do usuário logado
 - [ ] Adaptar o front-end para buscar e salvar tasks no Supabase (substituir ou complementar o uso de `localStorage`)
 - [ ] Implementar board visual em colunas por usuário dentro do workspace:
-  - [ ] Coluna com nome do usuário
-  - [ ] Cards exibindo responsável, status, nome da task e SLA
+- [ ] Coluna com nome do usuário
+- [ ] Cards exibindo responsável, status, nome da task e SLA
 - [ ] Garantir que o usuário só veja tasks do seu workspace
 
 ## Critérios de aceite
@@ -46,7 +44,7 @@ Permitir que as tasks sejam salvas em banco de dados (Supabase), compartilhadas 
 
 ## Riscos e dependências
 
-- Modelagem inadequada da tabela de tasks pode dificultar futuras regras de permissão e realtime.
+- Modelagem inadequada da tabela de tasks (definida na Sprint 00) pode dificultar futuras regras de permissão e realtime.
 - A performance de consultas pode ser impactada se filtros por workspace e usuário não forem bem planejados.
 
 ## Definição de pronto (DoD)

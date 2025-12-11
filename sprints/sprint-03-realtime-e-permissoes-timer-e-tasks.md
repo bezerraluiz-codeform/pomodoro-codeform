@@ -24,13 +24,13 @@ Garantir que tasks e timer sejam atualizados em tempo real entre os membros do m
 
 ## Backlog da sprint
 
-- [ ] Configurar Supabase Realtime (ou recurso equivalente) para a tabela de `tasks`
+- [ ] Garantir uso dos canais Realtime configurados na Sprint 00 para a tabela de `tasks` (ou equivalente) no front-end
 - [ ] Implementar assinatura em tempo real no front-end para refletir alterações de tasks entre usuários do mesmo workspace
 - [ ] Definir e persistir papel do usuário no workspace (`admin` x `member`) na tabela `workspace_members`
 - [ ] Implementar regra de permissão no backend/camada de domínio para que apenas o responsável pela task possa editá-la
 - [ ] Adaptar o board para bloquear edição de tasks quando o usuário não é o responsável
-- [ ] Modelar e persistir o estado do timer por workspace (por exemplo, tabela `workspace_timer_state` ou equivalente)
-- [ ] Implementar atualização em tempo real do estado do timer para todos os usuários do workspace
+- [ ] Garantir o uso da tabela `workspace_timer_state` criada na Sprint 00 (ou equivalente) para representar o estado do timer por workspace
+- [ ] Implementar atualização em tempo real do estado do timer para todos os usuários do workspace usando Realtime
 - [ ] Implementar regra de permissão que apenas usuários `admin` possam pausar (e, se definido, iniciar/resetar) o timer do workspace
 
 ## Critérios de aceite
@@ -48,7 +48,8 @@ Garantir que tasks e timer sejam atualizados em tempo real entre os membros do m
 
 ## Riscos e dependências
 
-- Configuração incorreta de canais realtime pode gerar inconsistências entre os clientes.
+- Dependência da **Sprint 00 - Configuração Supabase** para que tabelas e canais Realtime estejam disponíveis.
+- Configuração incorreta de canais Realtime pode gerar inconsistências entre os clientes.
 - Regras de permissão precisam ser centralizadas em camada de domínio/backend para evitar brechas de segurança no front.
 - A implementação do timer compartilhado depende de como o timer atual foi projetado; pode haver necessidade de refatoração.
 

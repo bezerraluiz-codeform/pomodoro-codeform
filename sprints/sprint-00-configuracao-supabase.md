@@ -32,13 +32,12 @@ Entregar um projeto Supabase configurado e versionado para o Pomodoro CodeForm, 
 - [ ] **Configuração do projeto Supabase**
 
   - [ ] Criar projeto Supabase dedicado ao Pomodoro CodeForm.
-  - [ ] Configurar variáveis de ambiente no projeto Next (`SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` em ambiente seguro).
+  - [ ] Configurar variáveis de ambiente no projeto Next (`SUPABASE_URL`, `SUPABASE_ANON_KEY`).
   - [ ] Versionar scripts de criação de schema (SQL ou via Supabase CLI) em repositório separado ou pasta `infra/` do projeto.
 
 - [ ] **Autenticação e usuários pré-cadastrados**
 
   - [ ] Definir método de autenticação (e-mail + senha) no Supabase Auth, desabilitando sign-up público.
-  - [ ] Criar script/seed para cadastro dos usuários pré-definidos (por exemplo, `luiz.a@cartoriocriciuma.com.br`) diretamente no Auth do Supabase.
   - [ ] Criar tabela `users` (perfil de usuário) referenciando `auth.users`:
     - [ ] `id` (uuid, PK, referência para `auth.users.id`)
     - [ ] `name`
@@ -70,7 +69,7 @@ Entregar um projeto Supabase configurado e versionado para o Pomodoro CodeForm, 
     - [ ] `owner_id` (FK para `users.id`)
     - [ ] `title`
     - [ ] `description`
-    - [ ] `status` (enum: `todo`, `doing`, `done` ou similar)
+    - [ ] `status` (enum: `doing`, `done` ou similar)
     - [ ] `sla_datetime`
     - [ ] `created_at`, `updated_at`
   - [ ] Adicionar trigger genérica para atualizar `updated_at` em `tasks`, `workspaces` e `workspace_members` em `UPDATE`.
@@ -94,9 +93,7 @@ Entregar um projeto Supabase configurado e versionado para o Pomodoro CodeForm, 
   - [ ] Verificar filtros de canal (por schema e tabela) e limitar apenas ao necessário para o Pomodoro CodeForm.
   - [ ] Documentar canais/eventos que o front-end deverá assinar (ex.: `postgres_changes` em `public.tasks` e `public.workspace_timer_state`).
 
-- [ ] **Migrations, seeds e documentação**
-  - [ ] Garantir que toda criação de tabelas, enums, triggers, RLS e seeds esteja versionada em scripts reproduzíveis.
-  - [ ] Documentar no repositório como subir o banco localmente (ou usar Supabase cloud) e como aplicar migrations/seeds.
+- [ ] **Documentação**
   - [ ] Validar que os dados prontos atendem ao cenário descrito em `FEATURES.md` (usuários e workspaces pré-cadastrados).
 
 ## Critérios de aceite
@@ -106,7 +103,7 @@ Entregar um projeto Supabase configurado e versionado para o Pomodoro CodeForm, 
 - Triggers de negócio configuradas (por exemplo, atualização de timestamps e garantias de integridade) testadas e funcionando.
 - RLS habilitado e testado, garantindo que um usuário não consegue acessar dados de outro workspace.
 - Realtime habilitado e validado para `tasks` e `workspace_timer_state` (eventos visíveis via console ou script de teste).
-- Usuários pré-cadastrados disponíveis no Supabase Auth e sincronizados com a tabela `users`.
+- Supabase Auth e sincronizados com a tabela `users`.
 
 ## Não escopo
 

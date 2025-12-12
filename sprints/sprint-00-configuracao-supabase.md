@@ -37,64 +37,115 @@ Entregar um projeto Supabase configurado e versionado para o Pomodoro CodeForm, 
 
 - [ ] **Autenticação e usuários pré-cadastrados**
 
-  - [ ] Definir método de autenticação (e-mail + senha) no Supabase Auth, desabilitando sign-up público.
-  - [ ] Criar tabela `users` (perfil de usuário) referenciando `auth.users`:
-    - [ ] `id` (uuid, PK, referência para `auth.users.id`)
-    - [ ] `name`
-    - [ ] `email`
-    - [ ] `role` (enum: `admin`, `member`)
-    - [ ] `created_at`, `updated_at`
-  - [ ] Habilitar RLS na tabela `users` com políticas para que o usuário só consiga ler/atualizar o próprio perfil.
+  - [ ] Definir método de autenticação (e-mail + senha) no Supabase Auth, desabilitando sign-up público.  
+        _Configuração manual no dashboard do Supabase: habilitar apenas e-mail/senha e desabilitar sign-up público._
+  - [x] Criar tabela `users` (perfil de usuário) referenciando `auth.users`:
+    - [x] `id` (uuid, PK, referência para `auth.users.id`)
+    - [x] `name`
+    - [x] `email`
+    - [x] `role` (enum: `admin`, `member`)
+    - [x] `created_at`, `updated_at`
+  - [x] Habilitar RLS na tabela `users` com políticas para que o usuário só consiga ler/atualizar o próprio perfil.
 
-- [ ] **Modelagem de workspaces e membros**
+- [x] **Modelagem de workspaces e membros**
 
-  - [ ] Criar tabela `workspaces`:
-    - [ ] `id` (uuid, PK)
-    - [ ] `name`
-    - [ ] `slug`
-    - [ ] `created_at`, `updated_at`
-  - [ ] Criar tabela `workspace_members`:
-    - [ ] `workspace_id` (FK para `workspaces.id`)
-    - [ ] `user_id` (FK para `users.id`)
-    - [ ] `role` (enum: `admin`, `member`)
-    - [ ] `created_at`, `updated_at`
-    - [ ] Constraint de unicidade (`workspace_id`, `user_id`)
-  - [ ] Configurar RLS em `workspaces` e `workspace_members` garantindo que o usuário só veja dados de workspaces dos quais participa.
+  - [x] Criar tabela `workspaces`:
+    - [x] `id` (uuid, PK)
+    - [x] `name`
+    - [x] `slug`
+    - [x] `created_at`, `updated_at`
+  - [x] Criar tabela `workspace_members`:
+    - [x] `workspace_id` (FK para `workspaces.id`)
+    - [x] `user_id` (FK para `users.id`)
+    - [x] `role` (enum: `admin`, `member`)
+    - [x] `created_at`, `updated_at`
+    - [x] Constraint de unicidade (`workspace_id`, `user_id`)
+  - [x] Configurar RLS em `workspaces` e `workspace_members` garantindo que o usuário só veja dados de workspaces dos quais participa.
 
-- [ ] **Modelagem de tasks**
+- [x] **Modelagem de tasks**
 
-  - [ ] Criar tabela `tasks`:
-    - [ ] `id` (uuid, PK)
-    - [ ] `workspace_id` (FK para `workspaces.id`)
-    - [ ] `owner_id` (FK para `users.id`)
-    - [ ] `title`
-    - [ ] `description`
-    - [ ] `status` (enum: `doing`, `done` ou similar)
-    - [ ] `sla_datetime`
-    - [ ] `created_at`, `updated_at`
-  - [ ] Adicionar trigger genérica para atualizar `updated_at` em `tasks`, `workspaces` e `workspace_members` em `UPDATE`.
-  - [ ] Configurar RLS em `tasks` para que:
-    - [ ] Usuários só leiam tasks do próprio workspace.
-    - [ ] Apenas o `owner_id` ou administradores do workspace possam atualizar/deletar tasks.
+  - [x] Criar tabela `tasks`:
+    - [x] `id` (uuid, PK)
+    - [x] `workspace_id` (FK para `workspaces.id`)
+    - [x] `owner_id` (FK para `users.id`)
+    - [x] `title`
+    - [x] `description`
+    - [x] `status` (enum: `doing`, `done` ou similar)
+    - [x] `sla_datetime`
+    - [x] `created_at`, `updated_at`
+  - [x] Adicionar trigger genérica para atualizar `updated_at` em `tasks`, `workspaces` e `workspace_members` em `UPDATE`.
+  - [x] Configurar RLS em `tasks` para que:
+    - [x] Usuários só leiam tasks do próprio workspace.
+    - [x] Apenas o `owner_id` ou administradores do workspace possam atualizar/deletar tasks.
 
-- [ ] **Modelagem do timer por workspace**
+- [x] **Modelagem do timer por workspace**
 
-  - [ ] Criar tabela `workspace_timer_state`:
-    - [ ] `workspace_id` (PK/FK para `workspaces.id`)
-    - [ ] `status` (enum: `running`, `paused`, `idle`)
-    - [ ] `remaining_seconds`
-    - [ ] `updated_at`
-  - [ ] Configurar RLS em `workspace_timer_state` permitindo acesso somente a membros do workspace.
-  - [ ] Preparar índice se necessário para consultas por `workspace_id`.
+  - [x] Criar tabela `workspace_timer_state`:
+  - [x] `workspace_id` (PK/FK para `workspaces.id`)
+  - [x] `status` (enum: `running`, `paused`, `idle`)
+  - [x] `remaining_seconds`
+  - [x] `updated_at`
+  - [x] Configurar RLS em `workspace_timer_state` permitindo acesso somente a membros do workspace.
+  - [x] Preparar índice se necessário para consultas por `workspace_id`.
 
-- [ ] **Realtime (nível Supabase)**
+- [x] **Realtime (nível Supabase)**
 
-  - [ ] Habilitar Realtime para as tabelas `tasks` e `workspace_timer_state`.
-  - [ ] Verificar filtros de canal (por schema e tabela) e limitar apenas ao necessário para o Pomodoro CodeForm.
-  - [ ] Documentar canais/eventos que o front-end deverá assinar (ex.: `postgres_changes` em `public.tasks` e `public.workspace_timer_state`).
+  - [x] Habilitar Realtime para as tabelas `tasks` e `workspace_timer_state` adicionando-as à publicação `supabase_realtime`:
 
-- [ ] **Documentação**
-  - [ ] Validar que os dados prontos atendem ao cenário descrito em `FEATURES.md` (usuários e workspaces pré-cadastrados).
+    ```sql
+    alter publication supabase_realtime add table public.tasks;
+    alter publication supabase_realtime add table public.workspace_timer_state;
+    ```
+
+  - [x] Definir filtros de canal (por schema e tabela) limitando apenas ao necessário para o Pomodoro CodeForm:
+
+    - **Tasks**: canal lógico por workspace (ex.: `pomodoro:tasks:workspace:{workspaceId}`) assinando mudanças na tabela `public.tasks` filtradas por `workspace_id`:
+
+      ```ts
+      supabase
+        .channel(`pomodoro:tasks:workspace:${workspaceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "tasks",
+            filter: `workspace_id=eq.${workspaceId}`,
+          },
+          handleTaskChange,
+        )
+        .subscribe();
+      ```
+
+    - **Timer por workspace**: canal lógico por workspace (ex.: `pomodoro:timer:workspace:{workspaceId}`) assinando mudanças na tabela `public.workspace_timer_state` filtradas por `workspace_id`:
+
+      ```ts
+      supabase
+        .channel(`pomodoro:timer:workspace:${workspaceId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "workspace_timer_state",
+            filter: `workspace_id=eq.${workspaceId}`,
+          },
+          handleTimerChange,
+        )
+        .subscribe();
+      ```
+
+  - [x] Documentar canais/eventos que o front-end deverá assinar para atender `FEATURES.md` e as sprints 02 e 03:
+
+    - Eventos `postgres_changes` em `public.tasks` para refletir criação, atualização e deleção de tasks entre membros do mesmo workspace.
+    - Eventos `postgres_changes` em `public.workspace_timer_state` para manter o timer sincronizado entre todos os usuários do workspace.
+    - Uso consistente de filtros por `workspace_id` para garantir isolamento entre workspaces e alinhamento com as políticas de RLS.
+
+- [x] **Documentação**
+  - [x] Validar que os dados prontos atendem ao cenário descrito em `FEATURES.md` (usuários e workspaces pré-cadastrados), garantindo pelo menos:
+    - Usuário pré-cadastrado com e-mail `luiz.a@cartoriocriciuma.com.br` existente em `auth.users` e sincronizado em `public.users` com papel adequado (`admin` ou `member`) via trigger `handle_new_auth_user`.
+    - Pelo menos um `workspace` criado em `public.workspaces` e associado ao usuário via `public.workspace_members`, respeitando o modelo de workspaces em grupo.
+    - Um registro em `public.workspace_timer_state` para cada workspace ativo, permitindo que o timer em realtime seja compartilhado entre os membros do mesmo workspace.
 
 ## Critérios de aceite
 

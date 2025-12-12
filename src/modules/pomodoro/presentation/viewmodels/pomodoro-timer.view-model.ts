@@ -21,8 +21,7 @@ interface PomodoroTimerState {
 
 const DURATIONS = {
   "long-break-15": {
-    // focus: 25 * 60,
-    focus: 5,
+    focus: 25 * 60,
     shortBreak: 5 * 60,
     longBreak: 15 * 60,
   },

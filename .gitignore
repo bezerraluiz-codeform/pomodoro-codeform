@@ -13,5 +13,12 @@ pnpm-debug.log*
 # env
 .env
 .env.*
+!.env.example
+
+# runtime env (gerado no start do ambiente)
+public/env.js
+
+# scripts build output
+scripts-dist/
 
 

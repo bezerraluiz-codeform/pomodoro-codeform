@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "env:generate": "tsc -p scripts/tsconfig.json && node scripts-dist/generate-runtime-env.js",
+    "predev": "npm run env:generate",
     "dev": "next dev",
     "build": "next build",
+    "prestart": "npm run env:generate",
     "start": "next start",
     "lint": "eslint"
   },

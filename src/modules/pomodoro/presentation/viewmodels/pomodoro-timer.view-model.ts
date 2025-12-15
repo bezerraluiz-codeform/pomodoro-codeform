@@ -47,7 +47,12 @@ const FOCUS_VIDEOS = [
 ];
 
 const getFocusVideoOrder = (video: string): number => {
-  const fileName = video.split("/").pop() ?? "";
+  const fileNamePart = video.split("/").pop();
+  if (typeof fileNamePart !== "string") {
+    return 0;
+  }
+
+  const fileName = fileNamePart;
   const match = fileName.match(/^focus(\d*)\.mp4$/);
 
   if (!match) {
@@ -114,11 +119,8 @@ export const usePomodoroTimerViewModel = () => {
       const savedTasks = localStorage.getItem("pomodoro-tasks");
       if (savedTasks) {
         try {
-          const parsedTasks = JSON.parse(savedTasks);
-          const tasksWithDates = parsedTasks.map((task: any) => ({
-            ...task,
-            createdAt: new Date(task.createdAt),
-          }));
+          const parsedTasks: unknown = JSON.parse(savedTasks);
+          const tasksWithDates = parseStoredTasks(parsedTasks);
 
           setState((prev) => ({ ...prev, tasks: tasksWithDates }));
         } catch (error) {
@@ -406,3 +408,74 @@ export const usePomodoroTimerViewModel = () => {
     toggleDurationMode,
   };
 };
+
+type StoredTask = Readonly<{
+  id: string;
+  title: string;
+  assignee: string;
+  isCompleted: boolean;
+  createdAt: string;
+}>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function parseStoredTask(value: unknown): Task {
+  if (!isRecord(value)) {
+    throw new Error("Task inválida no storage");
+  }
+
+  const id = value.id;
+  const title = value.title;
+  const assignee = value.assignee;
+  const isCompleted = value.isCompleted;
+  const createdAt = value.createdAt;
+
+  const hasValidStrings =
+    typeof id === "string" &&
+    id.trim().length > 0 &&
+    typeof title === "string" &&
+    title.trim().length > 0 &&
+    typeof assignee === "string" &&
+    assignee.trim().length > 0 &&
+    typeof createdAt === "string" &&
+    createdAt.trim().length > 0;
+
+  if (!hasValidStrings) {
+    throw new Error("Task inválida no storage");
+  }
+
+  if (typeof isCompleted !== "boolean") {
+    throw new Error("Task inválida no storage");
+  }
+
+  const createdAtDate = new Date(createdAt);
+  if (Number.isNaN(createdAtDate.getTime())) {
+    throw new Error("Task inválida no storage");
+  }
+
+  const storedTask: StoredTask = {
+    id,
+    title,
+    assignee,
+    isCompleted,
+    createdAt,
+  };
+
+  return {
+    id: storedTask.id,
+    title: storedTask.title,
+    assignee: storedTask.assignee,
+    isCompleted: storedTask.isCompleted,
+    createdAt: createdAtDate,
+  };
+}
+
+function parseStoredTasks(value: unknown): Task[] {
+  if (!Array.isArray(value)) {
+    throw new Error("Lista de tasks inválida no storage");
+  }
+
+  return value.map((item) => parseStoredTask(item));
+}

@@ -53,6 +53,16 @@ O objetivo é oferecer um fluxo de foco simples, visualmente agradável e alinha
   - Node.js 22  
   - npm (recomendado usar `npm ci` para instalação reprodutível)
 
+- **Variáveis de ambiente (runtime)**
+  - Este projeto usa runtime env via `public/env.js` (build once, deploy anywhere).
+  - Fonte de verdade das envs de plataforma: `pomodoro-codeform-backend/plataforma-infra/docker-compose.yml`.
+  - Env obrigatórias:
+    - `API_URL` (URL base da API, ex.: `http://localhost:3333`)
+    - `ENV_NAME` (ex.: `local`, `dev`, `staging`, `prod`)
+    - `DEBUG` (`true` ou `false`)
+  - Em `npm run dev`/`npm run start`, o arquivo `public/env.js` é gerado a partir de `public/env.template.js`.
+  - Se você não for rodar via docker-compose, copie `.env.example` para `.env` e ajuste os valores.
+
 - **Instalação**
 
 ```bash
@@ -71,6 +81,9 @@ Aplicação disponível em: `http://localhost:3000`
 
 - **`npm run dev`**  
   Sobe o servidor de desenvolvimento do Next.js.
+
+- **`npm run env:generate`**  
+  Gera `public/env.js` a partir de `public/env.template.js` usando as envs do ambiente.
 
 - **`npm run build`**  
   Gera o build de produção da aplicação.

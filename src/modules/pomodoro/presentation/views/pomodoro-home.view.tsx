@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { usePomodoroTimerViewModel } from "@/modules/pomodoro/presentation/viewmodels/pomodoro-timer.view-model";
 import { PomodoroTodoList } from "../components/pomodoro-todo-list";
+import { ApiHealthPanel } from "../components/api-health-panel";
 
 export const PomodoroHomeView = () => {
   const {
@@ -191,6 +192,8 @@ export const PomodoroHomeView = () => {
                 </span>
               </div>
             </section>
+
+            <ApiHealthPanel />
           </div>
         </div>
       </main>

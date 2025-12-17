@@ -1,6 +1,13 @@
+import { createHttpClient } from "@/core/api/http/http-client";
+
 export type HealthResponse = Readonly<{
   status: "ok";
   timestamp: string;
+}>;
+
+export type HealthClock = Readonly<{
+  serverTimestamp: number;
+  serverIsoTimestamp: string;
 }>;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -27,6 +34,26 @@ export function parseHealthResponse(value: unknown): HealthResponse {
     status,
     timestamp: timestamp.trim(),
   };
+}
+
+export function toHealthClock(health: HealthResponse): HealthClock {
+  const date = new Date(health.timestamp);
+  const time = date.getTime();
+
+  if (Number.isNaN(time)) {
+    throw new Error("Timestamp inválido do /health");
+  }
+
+  return {
+    serverTimestamp: time,
+    serverIsoTimestamp: health.timestamp,
+  };
+}
+
+export async function fetchHealth(apiUrl: string): Promise<HealthResponse> {
+  const client = createHttpClient(apiUrl);
+  const payload = await client.getJson("/health");
+  return parseHealthResponse(payload);
 }
 
 

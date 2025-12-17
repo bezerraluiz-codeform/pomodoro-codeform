@@ -123,8 +123,8 @@ export const usePomodoroTimerViewModel = () => {
           const tasksWithDates = parseStoredTasks(parsedTasks);
 
           setState((prev) => ({ ...prev, tasks: tasksWithDates }));
-        } catch (error) {
-          console.error("Erro ao carregar tasks do localStorage", error);
+        } catch {
+          // Silenciosamente ignora tasks inválidas do localStorage
         }
       }
     }

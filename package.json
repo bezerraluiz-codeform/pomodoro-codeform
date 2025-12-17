@@ -3,13 +3,20 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prepare": "husky install",
     "env:generate": "tsc -p scripts/tsconfig.json && node scripts-dist/generate-runtime-env.js",
     "predev": "npm run env:generate",
     "dev": "next dev",
     "build": "next build",
     "prestart": "npm run env:generate",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -28,6 +35,11 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.7",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@jest/globals": "^30.0.0",
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.0.0",
+    "ts-jest": "^29.2.5",
+    "@types/jest": "^30.0.0"
   }
 }

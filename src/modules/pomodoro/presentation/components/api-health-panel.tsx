@@ -2,28 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getAppEnv } from "@/core/config/env";
-import { parseHealthResponse, type HealthResponse } from "@/core/api/health";
+import { fetchHealth, toHealthClock, type HealthResponse } from "@/core/api/health";
 
 type HealthPanelState =
   | Readonly<{ status: "idle" }>
   | Readonly<{ status: "loading" }>
   | Readonly<{ status: "success"; health: HealthResponse }>
   | Readonly<{ status: "error"; message: string }>;
-
-async function fetchHealth(apiUrl: string): Promise<HealthResponse> {
-  const url = new URL("/health", apiUrl);
-  const response = await fetch(url.toString(), {
-    method: "GET",
-    headers: { Accept: "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Falha ao consultar /health (HTTP ${response.status})`);
-  }
-
-  const payload: unknown = await response.json();
-  return parseHealthResponse(payload);
-}
 
 export function ApiHealthPanel(): React.ReactNode {
   const env = getAppEnv();
@@ -89,12 +74,19 @@ export function ApiHealthPanel(): React.ReactNode {
           <p className="text-slate-400">Consultando /health…</p>
         )}
         {state.status === "success" && (
-          <p>
-            <span className="text-slate-400">/health:</span>{" "}
-            <span className="font-semibold text-emerald-300">ok</span>{" "}
-            <span className="text-slate-400">· timestamp:</span>{" "}
-            <span className="font-medium">{state.health.timestamp}</span>
-          </p>
+          (() => {
+            const clock = toHealthClock(state.health);
+            return (
+              <p>
+                <span className="text-slate-400">/health:</span>{" "}
+                <span className="font-semibold text-emerald-300">ok</span>{" "}
+                <span className="text-slate-400">· serverTimestamp:</span>{" "}
+                <span className="font-medium">{clock.serverTimestamp}</span>{" "}
+                <span className="text-slate-400">· timestamp:</span>{" "}
+                <span className="font-medium">{clock.serverIsoTimestamp}</span>
+              </p>
+            );
+          })()
         )}
         {state.status === "error" && (
           <p className="text-rose-300">
